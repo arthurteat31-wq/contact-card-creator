@@ -5,8 +5,6 @@ import { ContactContextMenu } from "./ContactContextMenu";
 import { AssignDialog } from "./AssignDialog";
 import { TagSelector } from "./TagSelector";
 import { toast } from "sonner";
-import { Search, Filter, Users } from "lucide-react";
-import { Input } from "@/components/ui/input";
 
 // Sample data
 const sampleTags: Tag[] = [
@@ -75,7 +73,6 @@ export const ContactList = () => {
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [tagSelectorOpen, setTagSelectorOpen] = useState(false);
   const [activeContact, setActiveContact] = useState<Contact | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const handleAssign = (contact: Contact) => {
     setActiveContact(contact);
@@ -172,86 +169,37 @@ export const ContactList = () => {
     );
   };
 
-  // Filter and sort contacts
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contact.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const sortedContacts = [...filteredContacts].sort((a, b) => {
+  // Sort: pinned first
+  const sortedContacts = [...contacts].sort((a, b) => {
     if (a.isPinned && !b.isPinned) return -1;
     if (!a.isPinned && b.isPinned) return 1;
     return 0;
   });
 
-  const unreadCount = contacts.filter(c => c.isUnread).length;
-
   return (
-    <div className="h-full bg-card shadow-xl rounded-2xl overflow-hidden flex flex-col border border-border/50">
-      {/* Header */}
-      <div className="px-5 pt-5 pb-4 bg-gradient-to-b from-card to-card/95">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/25">
-              <Users className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="font-bold text-lg text-foreground">Conversas</h2>
-              <p className="text-xs text-muted-foreground">
-                {contacts.length} contatos • {unreadCount > 0 && (
-                  <span className="text-primary font-semibold">{unreadCount} não lidas</span>
-                )}
-              </p>
-            </div>
+    <div className="h-full bg-white overflow-hidden flex flex-col">
+      {sortedContacts.map((contact, index) => (
+        <ContactContextMenu
+          key={contact.id}
+          onAssign={() => handleAssign(contact)}
+          onAddTag={() => handleAddTag(contact)}
+          onMarkUnread={() => handleMarkUnread(contact)}
+          onBlock={() => handleBlock(contact)}
+          onFinish={() => handleFinish(contact)}
+          onMarkWaiting={() => handleMarkWaiting(contact)}
+          onPin={() => handlePin(contact)}
+          isPinned={contact.isPinned}
+        >
+          <div>
+            <ContactCard
+              contact={contact}
+              isSelected={selectedContactId === contact.id}
+              onClick={() => setSelectedContactId(contact.id)}
+              isLast={index === sortedContacts.length - 1}
+            />
           </div>
-          <button className="w-9 h-9 rounded-xl bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors">
-            <Filter className="w-4 h-4 text-muted-foreground" />
-          </button>
-        </div>
-
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar conversas..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-muted/50 border-0 h-10 rounded-xl placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-primary/50"
-          />
-        </div>
-      </div>
-
-      {/* Contacts List */}
-      <div className="flex-1 overflow-y-auto divide-y divide-border/30">
-        {sortedContacts.map((contact) => (
-          <ContactContextMenu
-            key={contact.id}
-            onAssign={() => handleAssign(contact)}
-            onAddTag={() => handleAddTag(contact)}
-            onMarkUnread={() => handleMarkUnread(contact)}
-            onBlock={() => handleBlock(contact)}
-            onFinish={() => handleFinish(contact)}
-            onMarkWaiting={() => handleMarkWaiting(contact)}
-            onPin={() => handlePin(contact)}
-            isPinned={contact.isPinned}
-          >
-            <div>
-              <ContactCard
-                contact={contact}
-                isSelected={selectedContactId === contact.id}
-                onClick={() => setSelectedContactId(contact.id)}
-              />
-            </div>
-          </ContactContextMenu>
-        ))}
-
-        {sortedContacts.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-            <Users className="w-12 h-12 mb-3 opacity-30" />
-            <p className="text-sm">Nenhuma conversa encontrada</p>
-          </div>
-        )}
-      </div>
+        </ContactContextMenu>
+      ))}
 
       <AssignDialog
         open={assignDialogOpen}
