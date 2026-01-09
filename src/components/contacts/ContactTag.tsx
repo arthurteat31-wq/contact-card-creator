@@ -7,23 +7,23 @@ interface ContactTagProps {
 }
 
 const colorClasses = {
-  orange: "bg-tag-orange-bg text-tag-orange border-tag-orange/30",
-  yellow: "bg-tag-yellow-bg text-tag-yellow-dark border-tag-yellow/30",
-  green: "bg-tag-green-bg text-tag-green border-tag-green/30",
-  red: "bg-tag-red-bg text-tag-red border-tag-red/30",
-  pink: "bg-tag-pink-bg text-tag-pink border-tag-pink/30",
-  blue: "bg-tag-blue-bg text-tag-blue border-tag-blue/30",
+  orange: "bg-amber-100 text-amber-700",
+  yellow: "bg-yellow-100 text-yellow-700",
+  green: "bg-emerald-100 text-emerald-700",
+  red: "bg-red-100 text-red-700",
+  pink: "bg-pink-100 text-pink-700",
+  blue: "bg-blue-100 text-blue-700",
 };
 
 export const ContactTag = ({ tag, showFull = false }: ContactTagProps) => {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border",
+        "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold",
         colorClasses[tag.color]
       )}
     >
-      {tag.emoji && <span>{tag.emoji}</span>}
+      {tag.emoji && <span className="text-[10px]">{tag.emoji}</span>}
       <span className={cn(!showFull && "max-w-[60px] truncate")}>
         {tag.label}
       </span>
