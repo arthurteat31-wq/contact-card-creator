@@ -178,10 +178,10 @@ export const ContactList = () => {
   });
 
   return (
-    <div className="h-full bg-card border-r border-border overflow-hidden flex flex-col">
-      <div className="p-4 border-b border-border">
-        <h2 className="font-semibold text-lg text-foreground">Contatos</h2>
-        <p className="text-sm text-muted-foreground">
+    <div className="h-full bg-background overflow-hidden flex flex-col">
+      <div className="px-4 py-3 border-b border-border/50">
+        <h2 className="font-semibold text-foreground">Contatos</h2>
+        <p className="text-xs text-muted-foreground">
           {contacts.length} conversas
         </p>
       </div>
